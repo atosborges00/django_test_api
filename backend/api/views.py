@@ -1,18 +1,15 @@
 import json
+from pyexpat import model
+from statistics import mode
+from django.forms.models import model_to_dict
 from django.http import JsonResponse
+from products.models import Product
 
 def api_home(request, *args, **kwargs):
-    print(request.GET)
-    print(request.POST)
-    body = request.body # byte string JSON data
+    model_data = Product.objects.all().order_by("?").first()
     data = {}
 
-    try:
-        data = json.loads(body) # string of JSON -> Python Dict
-    except:
-        pass
+    if model_data:
+        data = model_to_dict(model_data, fields=['id', 'title'])
 
-    data['params'] = dict(request.GET)
-    data['headers'] = dict(request.headers)
-    data['content_type'] = request.content_type
     return JsonResponse(data)
